@@ -1,13 +1,42 @@
 import os
+from typing import Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from passlib.context import CryptContext
+from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+from app.database import Session, get_db
+from app.db_model import User
+
+router = APIRouter(prefix="/users")
 
 HASH_SECRET_KEY = os.getenv("ENROLLWALL_HASH_SECRET_KEY")
 HASH_ALGORITHM = os.getenv("ENROLLWALL_HASH_ALGORITHM")
 
+db_depends = Annotated[Session, Depends(get_db)]
+bcrypt_context = CryptContext(schemes=["bcrypt"])
+
+
+class AddUserRequest(BaseModel):
+    first_name: str
+    last_name: str
+    email: str  # TODO add email validation via pydantic
+    role: str
+    password: str
+
 
 @router.get("/")
-async def get_all_users():
-    return "HEY"
+async def get_all_users(db: db_depends):
+    return db.query(User).all()
+
+
+@router.post("/", status_code=201)
+async def add_user(db: db_depends, user_request: AddUserRequest):
+    user_request.password = bcrypt_context.hash(user_request.password)
+    new_user = User(**user_request.model_dump())
+    try:
+        db.add(new_user)
+        db.commit()
+    except IntegrityError:
+        raise HTTPException(400, detail="Email already registered.")
