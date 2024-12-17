@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "enrollwall"
+version = "0.1.0"
+description = "Course managment system for students and instructors to register, manage and enroll to courses."
+authors = ["David Kovacs <davi.kovacs.1991@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115.6"
+pydantic-settings = "^2.7.0"
+passlib = "^1.7.4"
+sqlalchemy = "^2.0.36"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
