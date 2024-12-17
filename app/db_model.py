@@ -3,6 +3,8 @@ from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
+# TODO consider whether to use pydantic models or SQLModel
+
 
 class User(Base):
     __tablename__ = "users"

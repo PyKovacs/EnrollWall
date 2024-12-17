@@ -1,4 +1,3 @@
-import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -9,10 +8,13 @@ from sqlalchemy.exc import IntegrityError
 from app.database import Session, get_db
 from app.db_model import User
 
+from ..dependencies import get_settings
+
+settings = get_settings()
 router = APIRouter(prefix="/users")
 
-HASH_SECRET_KEY = os.getenv("ENROLLWALL_HASH_SECRET_KEY")
-HASH_ALGORITHM = os.getenv("ENROLLWALL_HASH_ALGORITHM")
+HASH_SECRET_KEY = settings.HASH_SECRET_KEY
+HASH_ALGORITHM = settings.HASH_ALGORITHM
 
 db_depends = Annotated[Session, Depends(get_db)]
 bcrypt_context = CryptContext(schemes=["bcrypt"])
@@ -38,5 +40,5 @@ async def add_user(db: db_depends, user_request: AddUserRequest):
     try:
         db.add(new_user)
         db.commit()
-    except IntegrityError:
+    except IntegrityError:  # DB Constrain
         raise HTTPException(400, detail="Email already registered.")
