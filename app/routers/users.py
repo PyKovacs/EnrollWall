@@ -13,8 +13,6 @@ from ..dependencies import get_settings
 settings = get_settings()
 router = APIRouter(prefix="/users")
 
-HASH_SECRET_KEY = settings.HASH_SECRET_KEY
-HASH_ALGORITHM = settings.HASH_ALGORITHM
 
 db_depends = Annotated[Session, Depends(get_db)]
 bcrypt_context = CryptContext(schemes=["bcrypt"])
