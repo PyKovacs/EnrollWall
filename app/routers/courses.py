@@ -11,7 +11,7 @@ router = APIRouter(prefix="/courses")
 db_depends = Annotated[Session, Depends(get_db)]
 
 
-class AddCourseRequest(BaseModel):
+class CourseModel(BaseModel):
     title: str
     description: str
     duration: int
@@ -31,8 +31,8 @@ async def get_course_by_id(db: db_depends, course_id: int):
     return course
 
 
-@router.post("/", status_code=201)
-async def add_course(db: db_depends, course_request: AddCourseRequest):
+@router.post("/", status_code=201, response_model=CourseModel)
+async def add_course(db: db_depends, course_request: CourseModel):
     if db.query(Course).filter(Course.title == course_request.title).first():
         raise HTTPException(400, detail="Course title already registered.")
     user_exists = db.query(User).filter(User.id == course_request.tutor_id).first()
@@ -46,8 +46,8 @@ async def add_course(db: db_depends, course_request: AddCourseRequest):
     return new_course
 
 
-@router.put("/{course_id}")
-async def update_course(db: db_depends, course_id: int, course_request: AddCourseRequest):
+@router.put("/{course_id}", response_model=CourseModel, status_code=200)
+async def update_course(db: db_depends, course_id: int, course_request: CourseModel):
     course = db.query(Course).filter(Course.id == course_id).first()
     if not course:
         raise HTTPException(404, detail="Course not found.")

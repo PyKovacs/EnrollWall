@@ -1,15 +1,7 @@
-from enum import Enum
-
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
-
-
-class RoleEnum(Enum):
-    TUTOR = "tutor"
-    STUDENT = "student"
-    ADMIN = "admin"
 
 
 class User(Base):
@@ -52,7 +44,7 @@ class Enrollment(Base):
     __tablename__ = "enrollments"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    student_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
     enrollment_date = Column(DateTime)
     completion_date = Column(DateTime)

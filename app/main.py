@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from .database import engine
 from .db_model import Base
-from .routers import courses, users
+from .routers import courses, enrollments, users
 
 Base.metadata.create_all(bind=engine)
 
@@ -17,3 +17,4 @@ async def health() -> dict[str, str]:
 
 app.include_router(courses.router)
 app.include_router(users.router)
+app.include_router(enrollments.router)
